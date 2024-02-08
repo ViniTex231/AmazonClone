@@ -46,7 +46,7 @@ const LoginScreen = () => {
 
         <View style={{ marginTop: 80 }} />
 
-        <Pressable style={ styles.buttonLogin }>
+        <Pressable onPress={() => navigation.navigate('Main')} style={ styles.buttonLogin }>
           <Text style={ styles.textLogin }>Login</Text>
         </Pressable>
 
@@ -85,13 +85,13 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginVertical: 10,
     width: 300,
-    fontSize:(email) => (email ? 16 : 16),
+    fontSize: 16
   },
   inputSenha: {
     color: 'gray',
     marginVertical: 10,
     width: 300,
-    fontSize: (password) => (password ? 16 : 16)
+    fontSize: 16
   },
   viewOpcoes: {
     marginTop: 12,

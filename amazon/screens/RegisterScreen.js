@@ -10,6 +10,7 @@ const RegisterScreen = () => {
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const navigation = useNavigation()
+  
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white', alignItems: 'center' }}>
       <View>
@@ -28,7 +29,7 @@ const RegisterScreen = () => {
 
         <View style={{ marginTop: 70 }}>
           <View style={styles.box}>
-            <Ionicons style={{ marginLeft: 8 }} name='ios-person' size={24} color='gray' />
+            <Ionicons style={{ marginLeft: 8 }} name='person' size={24} color='gray' />
             <TextInput value={name} onChangeText={(text) => setName(text)} style={styles.inputNome} placeholder='Digite seu Nome' />
           </View>
           <View style={styles.box}>
@@ -51,7 +52,7 @@ const RegisterScreen = () => {
         <View style={{ marginTop: 80 }} />
 
         <Pressable style={styles.buttonLogin}>
-          <Text style={styles.textLogin}>Login</Text>
+          <Text style={styles.textLogin}>Cadastrar</Text>
         </Pressable>
 
         <Pressable onPress={() => navigation.goBack()} style={styles.buttonCadastro}>
@@ -89,19 +90,19 @@ const styles = StyleSheet.create({
     color: 'gray',
     marginVertical: 10,
     width: 300,
-    fontSize: (email) => (email ? 16 : 16),
+    fontSize: 16,
   },
   inputSenha: {
     color: 'gray',
     marginVertical: 10,
     width: 300,
-    fontSize: (password) => (password ? 16 : 16)
+    fontSize: 16,
   },
   inputNome: {
     color: 'gray',
     marginVertical: 10,
     width: 300,
-    fontSize: (nome) => (nome ? 16 : 16)
+    fontSize: 16,
   },
   viewOpcoes: {
     marginTop: 12,
