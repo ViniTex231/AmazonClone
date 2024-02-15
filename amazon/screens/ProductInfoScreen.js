@@ -72,3 +72,5 @@ const ProductInfoScreen = () => {
 export default ProductInfoScreen
 
 const styles = StyleSheet.create({})
+
+//2:42:35
