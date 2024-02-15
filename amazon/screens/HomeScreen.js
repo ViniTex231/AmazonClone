@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, SafeAreaView, Platform, ScrollView, Pressable, TextInput, Image } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { AntDesign } from '@expo/vector-icons';
 import { Feather } from '@expo/vector-icons';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,8 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { SliderBox } from "react-native-image-slider-box"
 import axios from 'axios'
 import ProductItem from '../components/ProductItem';
+import DropDownPicker from 'react-native-dropdown-picker'
+import { useNavigation } from '@react-navigation/native';
 
 const HomeScreen = () => {
   const list = [
@@ -175,6 +177,15 @@ const HomeScreen = () => {
     },
   ]
   const [products, setProducts] = useState([])
+  const navigation = useNavigation()
+  const [open, setOpen] = useState(false)
+  const [category, setCategory] = useState('jewelery')
+  const [items, setItems] = useState([
+    { label: "Men's clothing", value: "men's clothing" },
+    { label: "jewelery", value: "jewelery" },
+    { label: "electronics", value: "electronics" },
+    { label: "women's clothing", value: "women's clothing" },
+  ])
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -187,7 +198,9 @@ const HomeScreen = () => {
 
     fetchData()
   }, [])
-  console.log('produtos', products)
+  const onGenderOpen = useCallback(() => {
+    setCompanyOpen(false)
+  }, [])
   return (
     <SafeAreaView style={{paddingTop: Platform.OS === 'android' ? 40 : 0, flex: 1, backgroundColor: 'white'}}>
       <ScrollView>
@@ -236,7 +249,16 @@ const HomeScreen = () => {
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               {offers.map((item, index) => (
-                <Pressable style={{marginVertical:10, alignItems: 'center', justifyContent: 'center'}}>
+                <Pressable onPress={() => navigation.navigate('Info',{
+                  id: item.id,
+                  title: item.title,
+                  price: item?.price,
+                  carouselImages: item.carouselImages,
+                  color: item?.color,
+                  size: item?.size,
+                  oldPrice: item?.oldPrice,
+                  item: item,
+                })} style={{marginVertical:10, alignItems: 'center', justifyContent: 'center'}}>
                   <Image style={{width:150, height: 150, resizeMode: 'contain'}} source={{uri: item?.image}} />
 
                   <View style={{backgroundColor: '#E31837', paddingVertical: 5, width: 130, justifyContent: 'center', alignItems: 'center', marginTop: 10, borderRadius: 4,}}>
@@ -248,12 +270,41 @@ const HomeScreen = () => {
 
         <Text style={{height: 1, borderColor: '#D0D0D0', borderWidth: 2, marginTop:15}}/>
 
-        <View style={{flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap'}}>
-          {products?.map((item, index) => (
-            <ProductItem item={item} key={index}/>
-          ))}
+        <View style={{marginHorizontal: 10, marginTop: 20, width: '45%', marginBottom: open ? 50 : 15}}>
+        <DropDownPicker
+              style={{
+                borderColor: "#B7B7B7",
+                height: 30,
+                marginBottom: open ? 120 : 15,
+              }}
+              open={open}
+              value={category} //genderValue
+              items={items}
+              setOpen={setOpen}
+              setValue={setCategory}
+              setItems={setItems}
+              placeholder="choose category"
+              placeholderStyle={styles.placeholderStyles}
+              onOpen={onGenderOpen}
+              // onChangeValue={onChange}
+              zIndex={3000}
+              zIndexInverse={1000}
+            />
         </View>
 
+        <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              flexWrap: "wrap",
+            }}
+        >
+          {products
+            ?.filter((item) => item.category === category)
+            .map((item, index) => (
+              <ProductItem item={item} key={index} />
+            ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   )
