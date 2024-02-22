@@ -1,14 +1,13 @@
 import { StyleSheet, Text, View, SafeAreaView, Platform, ScrollView, Pressable, TextInput, Image } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
-import { AntDesign } from '@expo/vector-icons';
-import { Feather } from '@expo/vector-icons';
-import { Ionicons } from '@expo/vector-icons';
-import { MaterialIcons } from '@expo/vector-icons';
+import { AntDesign, Feather, Ionicons, MaterialIcons, Entypo } from '@expo/vector-icons';
 import { SliderBox } from "react-native-image-slider-box"
 import axios from 'axios'
 import ProductItem from '../components/ProductItem';
 import DropDownPicker from 'react-native-dropdown-picker'
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux'
+import { BottomModal, SlideAnimation, ModalContent } from 'react-native-modals'
 
 const HomeScreen = () => {
   const list = [
@@ -201,7 +200,12 @@ const HomeScreen = () => {
   const onGenderOpen = useCallback(() => {
     setCompanyOpen(false)
   }, [])
+
+  const cart = useSelector ((state) => state.cart.cart)
+  const [modalVisible, setModalVisible] = useState(false)
+
   return (
+    <>
     <SafeAreaView style={{paddingTop: Platform.OS === 'android' ? 40 : 0, flex: 1, backgroundColor: 'white'}}>
       <ScrollView>
         <View style={{backgroundColor: '#00CED1', padding: 10, flexDirection: 'row', alignItems: 'center'}}>
@@ -213,14 +217,14 @@ const HomeScreen = () => {
             <Feather name="mic" size={24} color="black" />
         </View>
 
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 5, padding: 10, backgroundColor: '#AFEEEE'}}>
+        <Pressable onPress={() => setModalVisible(!modalVisible)} style={{flexDirection: 'row', alignItems: 'center', gap: 5, padding: 10, backgroundColor: '#AFEEEE'}}>
             <Ionicons name="location-outline" size={24} color="black" />
             <Pressable>
                 <Text style={{fontSize: 13, fontWeight: '500'}}>Entregar para Vinícius - Rua A 98</Text>
             </Pressable>
 
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-        </View>
+        </Pressable>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {list.map((item, index) => (
@@ -237,7 +241,25 @@ const HomeScreen = () => {
         <Text style={{padding:10, fontSize:18, fontWeight: 'bold'}}>Melhores ofertas da semana</Text>
         <View style={{flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap'}}>
             {deals.map((item, index) => (
-              <Pressable style={{marginVertical: 10, flexDirection: 'row', alignItems: 'center'}}>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("Info", {
+                    id: item.id,
+                    title: item.title,
+                    price: item?.price,
+                    carouselImages: item.carouselImages,
+                    color: item?.color,
+                    size: item?.size,
+                    oldPrice: item?.oldPrice,
+                    item: item,
+                  })
+                }
+                style={{
+                  marginVertical: 10,
+                  flexDirection: "row",
+                  alignItems: "center",
+                }}
+              >
                 <Image style={{width: 180, height: 180, resizeMode: 'contain'}} source={{uri:item?.image}} />
               </Pressable>
             ))}
@@ -307,6 +329,42 @@ const HomeScreen = () => {
         </View>
       </ScrollView>
     </SafeAreaView>
+
+    <BottomModal onBackdropPress={() => setModalVisible(!modalVisible)} swipeDirection={['up', 'down']} swipeThreshold={200} modalAnimation={ new SlideAnimation({ slideFrom: 'bottom' }) } onHardwareBackPress={() => setModalVisible(!modalVisible)} visible={modalVisible} onTouchOutside={() => setModalVisible(!modalVisible)}>
+      <ModalContent style={{ width: '100%', height: 400 }}>
+        <View style={{marginBottom: 8}}>
+          <Text style={{fontSize: 16, fontWeight: '500'}}>Escolha sua localização</Text>
+          <Text style={{marginTop: 5, fontSize: 16, color: 'gray'}}>Escolha um endereço de entrega para visualizar os produtos disponíveis e opções de entrega</Text>
+        </View>
+
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          {/* Endereços já adicionados */}
+
+          <Pressable onPress={() => {
+            setModalVisible(false)
+            navigation.navigate('Address')
+          }} style={{width: 140, height: 140, borderColor: '#D0D0D0', marginTop: 10, borderWidth: 1, padding: 10, justifyContent: 'center', alignItems: 'center'}}>
+            <Text style={{textAlign: 'center', color: '#0066B2', fontWeight: '500'}}>Adicionar um Endereço ou Ponto de Retirada</Text>
+          </Pressable>
+        </ScrollView>
+
+        <View style={{ flexDirection: 'column', gap: 7, marginBottom: 30 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5}}>
+              <Entypo name='location-pin' size={22} color='#0066b2' />
+              <Text style={{ color: '#0066b2', fontWeight: '400' }}>Digite o CEP</Text>
+          </View>
+
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5}}>
+              <Ionicons name='locate-sharp' size={22} color='#0066b2' />
+              <Text style={{ color: '#0066b2', fontWeight: '400' }}>Use minha Localização Atual</Text>
+          </View>
+
+        </View>
+
+      </ModalContent>
+    </BottomModal>
+
+    </>
   )
 }
 
